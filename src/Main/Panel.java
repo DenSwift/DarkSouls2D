@@ -1,3 +1,7 @@
+package Main;
+
+import Entitiy.Player;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -6,7 +10,7 @@ public class Panel extends JPanel implements Runnable {
     // Screen settings
     final int orgTileSize = 16; // 16x16 tile
     final int scale = 3;
-    final int tileSize = orgTileSize * scale; // 48x48 tile
+    public final int tileSize = orgTileSize * scale; // 48x48 tile
     final int maxScreenCol = 16;
     final int maxScreenRow = 12;
     final int screenWidth = tileSize * maxScreenCol; // 768 pixels
@@ -15,6 +19,7 @@ public class Panel extends JPanel implements Runnable {
 
     Thread gameThread; // Thread is something you can start and stop and once a thread started, it keeps your program running until you stop it
     KeyHandler keyH = new KeyHandler();
+    Player player = new Player(this, keyH);
 
     // Set player's def settings
     int playerX = 100;
@@ -27,7 +32,7 @@ public class Panel extends JPanel implements Runnable {
        this.setBackground(Color.black);
        this.setDoubleBuffered(true); // enabling this can improve game's rendering performance.
         this.addKeyListener(keyH);
-        this.setFocusable(true); // With this, this Panel can be "focused" to receive key input.
+        this.setFocusable(true); // With this, this Main.Panel can be "focused" to receive key input.
     }
 
     public  void startGameThread() {
@@ -68,24 +73,14 @@ public class Panel extends JPanel implements Runnable {
     }
 
     public void update() {
-        // In Java the upper left corner is X:0 V:0
-        if (keyH.up) { // X values increases to the right
-            playerY -= playerSpeed; // Y values increases as they go down
-        } else if (keyH.down) {
-            playerY += playerSpeed;
-        } else if (keyH.left) {
-            playerX -= playerSpeed;
-        } else if (keyH.right) {
-            playerX += playerSpeed;
-        }
+        player.update();
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D)g; // Change graphics g to 2D
-        g2.setColor(Color.white);
-        g2.fillRect(playerX, playerY, tileSize, tileSize);
+        player.draw(g2);
         g2.dispose(); // Dispose of this graphics context and release any system resources that it is using.
 
     }

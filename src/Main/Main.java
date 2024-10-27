@@ -1,3 +1,5 @@
+package Main;
+
 import javax.swing.*;
 
 public class Main {
@@ -9,7 +11,7 @@ public class Main {
 
         Panel gamePanel = new Panel();
         window.add(gamePanel);
-        window.pack(); // Causes this window to be sized to fit the preferred size and layouts of its subcomponents (Panel).
+        window.pack(); // Causes this window to be sized to fit the preferred size and layouts of its subcomponents (Main.Panel).
 
         window.setLocationRelativeTo(null); // displays window at the center of the screen
         window.setVisible(true);
