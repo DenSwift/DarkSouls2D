@@ -7,7 +7,6 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.security.Key;
 import java.util.Objects;
 
 public class Player extends Entity {
@@ -15,9 +14,15 @@ public class Player extends Entity {
     Panel gp;
     KeyHandler keyH;
 
+    public final int screenX;
+    public final int screenY;
+
     public Player(Panel gp, KeyHandler keyH) {
         this.gp = gp;
         this.keyH = keyH;
+
+        screenX = gp.screenWidth/2 - (gp.tileSize/2);
+        screenY = gp.screenHeight / 2 - (gp.tileSize/2);
 
         setDefaultValues();
         getPlayerImage();
@@ -25,22 +30,22 @@ public class Player extends Entity {
 
     public void setDefaultValues() {
 
-        x = 100;
-        y = 100;
+        worldx = 1000;
+        worldy = 300;
         speed = 4;
         direction = "down";
     }
 
     public void getPlayerImage() {
         try {
-            up1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/res/up1.png")));
-            up2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/res/up2.png")));
-            down1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/res/back1.png")));
-            down2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/res/back2.png")));
-            left1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/res/left1.png")));
-            left2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/res/left2.png")));
-            right1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/res/right1.png")));
-            right2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/res/right2.png")));
+            up1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/res/player/up1.png")));
+            up2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/res/player/up2.png")));
+            down1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/res/player/back1.png")));
+            down2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/res/player/back2.png")));
+            left1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/res/player/left1.png")));
+            left2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/res/player/left2.png")));
+            right1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/res/player/right1.png")));
+            right2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/res/player/right2.png")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -52,16 +57,16 @@ public class Player extends Entity {
             // In Java the upper left corner is X:0 V:0
             if (keyH.up) { // X values increases to the right
                 direction = "up";
-                y -= speed; // Y values increases as they go down
+                worldy -= speed; // Y values increases as they go down
             } else if (keyH.down) {
                 direction = "down";
-                y += speed;
+                worldy += speed;
             } else if (keyH.left) {
                 direction = "left";
-                x -= speed;
+                worldx -= speed;
             } else if (keyH.right) {
                 direction = "right";
-                x += speed;
+                worldx += speed;
             }
 
             spriteCounter++;
@@ -117,7 +122,6 @@ public class Player extends Entity {
                 break;
         }
 
-        g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
     }
-
 }
