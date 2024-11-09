@@ -11,18 +11,22 @@ import java.util.Objects;
 
 public class Player extends Entity {
 
-    Panel gp;
     KeyHandler keyH;
 
     public final int screenX;
     public final int screenY;
 
     public Player(Panel gp, KeyHandler keyH) {
-        this.gp = gp;
+
+        super(gp);
         this.keyH = keyH;
 
         screenX = gp.screenWidth/2 - (gp.tileSize/2);
         screenY = gp.screenHeight / 2 - (gp.tileSize/2);
+
+        solidArea = new Rectangle(0,0,15,15);
+        solidAreaDefaultX = 0;
+        solidAreaDefaultY = 0;
 
         setDefaultValues();
         getPlayerImage();
@@ -34,6 +38,10 @@ public class Player extends Entity {
         worldy = 300;
         speed = 4;
         direction = "down";
+
+        // player status
+        maxLife = 6;
+        life = maxLife;
     }
 
     public void getPlayerImage() {
@@ -52,39 +60,39 @@ public class Player extends Entity {
     }
 
     public void update() {
-
-        if(keyH.up || keyH.down || keyH.left || keyH.right) {
-            // In Java the upper left corner is X:0 V:0
-            if (keyH.up) { // X values increases to the right
+        if (keyH.up || keyH.down || keyH.left || keyH.right) {
+            if (keyH.up) {
                 direction = "up";
-                worldy -= speed; // Y values increases as they go down
             } else if (keyH.down) {
                 direction = "down";
-                worldy += speed;
             } else if (keyH.left) {
                 direction = "left";
-                worldx -= speed;
-            } else if (keyH.right) {
+            } else if (keyH.right)  {
                 direction = "right";
-                worldx += speed;
+            }
+
+            collisionOn = false;
+
+            p.cChecker.checkObject(this, true);
+            int npcIndex = p.cChecker.checkEntity(this, p.nps);
+
+            if (!collisionOn) {
+                switch (direction) {
+                    case "up": worldy -= speed; break;
+                    case "down": worldy += speed; break;
+                    case "left": worldx -= speed; break;
+                    case "right": worldx += speed; break;
+                }
             }
 
             spriteCounter++;
             if (spriteCounter > 12) {
-                if(spriteNum == 1) {
-                    spriteNum = 2;
-                } else if (spriteNum == 2) {
-                    spriteNum = 1;
-                }
+                spriteNum = (spriteNum == 1) ? 2 : 1;
                 spriteCounter = 0;
             }
         }
     }
-
     public void draw(Graphics2D g2) {
-//        g2.setColor(Color.white);
-//        g2.fillRect(x, y, gp.tileSize, gp.tileSize);
-
         BufferedImage image = null;
 
         switch (direction) {
@@ -121,7 +129,6 @@ public class Player extends Entity {
                 }
                 break;
         }
-
-        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, screenX, screenY, p.tileSize, p.tileSize, null);
     }
 }

@@ -1,5 +1,6 @@
 package Main;
 
+import Entitiy.Entity;
 import Entitiy.Player;
 import object.SuperObject;
 import tile.TileManager;
@@ -18,6 +19,7 @@ public class Panel extends JPanel implements Runnable {
     public int screenWidth = tileSize * maxScreenCol; // 768 pixels
     public int screenHeight = tileSize * maxScreenRow; // 576 pixels
     int FPS = 60; // frame per second
+    public boolean gameOver;
 
     // World settings
     public final int maxWorldCol = 50;
@@ -26,11 +28,14 @@ public class Panel extends JPanel implements Runnable {
     public final int worldHeight = tileSize * maxScreenRow;
 
     TileManager tileM = new TileManager(this);
-    Thread gameThread; // Thread is something you can start and stop and once a thread started, it keeps your program running until you stop it
-    KeyHandler keyH = new KeyHandler();
+    public Thread gameThread; // Thread is something you can start and stop and once a thread started, it keeps your program running until you stop it
+   public CollisionHandler cChecker = new CollisionHandler(this);
+   public  KeyHandler keyH = new KeyHandler();
     public Player player = new Player(this, keyH);
     public SuperObject obj[] = new SuperObject[20];
+    public Entity[] nps = new Entity[5];
     public AssetSetter aSetter = new AssetSetter(this);
+    public UI ui = new UI(this);
 
     public  Panel() {
         this.setPreferredSize(new Dimension(screenWidth,screenHeight));
@@ -41,8 +46,8 @@ public class Panel extends JPanel implements Runnable {
     }
 
     public void setupGame() {
-
         aSetter.setObject();
+        aSetter.setNPC();
     }
 
     public  void startGameThread() {
@@ -57,9 +62,6 @@ public class Panel extends JPanel implements Runnable {
         double nextDrawTime = System.nanoTime() + drawInterval;
 
         while(gameThread != null) {
-
-            long currentTime = System.nanoTime();
-
             // UPDATE: info such as character positions
             update();
             // DRAW: draw the screen with the updated info
@@ -78,12 +80,16 @@ public class Panel extends JPanel implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
     public void update() {
         player.update();
+        for (int i = 0; i < nps.length; i++) {
+            if(nps[i] != null) {
+                nps[i].update();
+            }
+        }
     }
 
     public void paintComponent(Graphics g) {
@@ -100,10 +106,16 @@ public class Panel extends JPanel implements Runnable {
                obj[i].draw(g2, this);
            }
         }
-
+        // boss
+        for (int i = 0; i < nps.length; i++) {
+            if(nps[i] != null) {
+                nps[i].draw(g2);
+            }
+        }
         // Player
         player.draw(g2);
-        g2.dispose(); // Dispose of this graphics context and release any system resources that it is using.
+        ui.draw(g2);
 
+        g2.dispose(); // Dispose of this graphics context and release any system resources that it is using.
     }
 }

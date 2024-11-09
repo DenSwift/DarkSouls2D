@@ -12,5 +12,6 @@ public class Bonfire extends  SuperObject {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        collision = true;
     }
 }

@@ -1,12 +1,11 @@
 package Main;
 
+import Entitiy.Boss;
 import object.Bonfire;
 import object.Torch;
 
 public class AssetSetter {
-
     Panel p;
-
     public AssetSetter(Panel p) {
         this.p = p;
     }
@@ -55,5 +54,10 @@ public class AssetSetter {
         p.obj[10] = new Torch();
         p.obj[10].worldX = 35 * p.tileSize;
         p.obj[10].worldY = 7 * p.tileSize;
+    }
+    public void setNPC() {
+        p.nps[0] = new Boss(p);
+        p.nps[0].worldx = p.tileSize*40;
+        p.nps[0].worldy = p.tileSize*4;
     }
 }
