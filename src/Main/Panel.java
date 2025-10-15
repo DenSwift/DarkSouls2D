@@ -1,6 +1,9 @@
 package Main;
 
+import Entitiy.Entity;
 import Entitiy.Player;
+import object.SuperObject;
+import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,33 +14,45 @@ public class Panel extends JPanel implements Runnable {
     final int orgTileSize = 16; // 16x16 tile
     final int scale = 3;
     public final int tileSize = orgTileSize * scale; // 48x48 tile
-    final int maxScreenCol = 16;
-    final int maxScreenRow = 12;
-    final int screenWidth = tileSize * maxScreenCol; // 768 pixels
-    final int screenHeight = tileSize * maxScreenRow; // 576 pixels
+    public int maxScreenCol = 16;
+    public int maxScreenRow = 12;
+    public int screenWidth = tileSize * maxScreenCol; // 768 pixels
+    public int screenHeight = tileSize * maxScreenRow; // 576 pixels
     int FPS = 60; // frame per second
+    public boolean gameOver;
 
-    Thread gameThread; // Thread is something you can start and stop and once a thread started, it keeps your program running until you stop it
-    KeyHandler keyH = new KeyHandler();
-    Player player = new Player(this, keyH);
+    // World settings
+    public final int maxWorldCol = 50;
+    public final int maxWorldRow = 50;
+    public final  int worldWidth = tileSize * maxWorldCol;
+    public final int worldHeight = tileSize * maxScreenRow;
 
-    // Set player's def settings
-    int playerX = 100;
-    int playerY = 100;
-    int playerSpeed = 5; // pixels
-
+    TileManager tileM = new TileManager(this);
+    public Thread gameThread; // Thread is something you can start and stop and once a thread started, it keeps your program running until you stop it
+   public CollisionHandler cChecker = new CollisionHandler(this);
+   public  KeyHandler keyH = new KeyHandler();
+    public Player player = new Player(this, keyH);
+    public SuperObject obj[] = new SuperObject[20];
+    public Entity[] nps = new Entity[5];
+    public AssetSetter aSetter = new AssetSetter(this);
+    public UI ui = new UI(this);
 
     public  Panel() {
-       this.setPreferredSize(new Dimension(screenWidth,screenHeight));
-       this.setBackground(Color.black);
-       this.setDoubleBuffered(true); // enabling this can improve game's rendering performance.
+        this.setPreferredSize(new Dimension(screenWidth,screenHeight));
+        this.setBackground(Color.black);
+        this.setDoubleBuffered(true); // enabling this can improve game's rendering performance.
         this.addKeyListener(keyH);
         this.setFocusable(true); // With this, this Main.Panel can be "focused" to receive key input.
     }
 
+    public void setupGame() {
+        aSetter.setObject();
+        aSetter.setNPC();
+    }
+
     public  void startGameThread() {
-      gameThread = new Thread(this);
-      gameThread.start();
+        gameThread = new Thread(this);
+        gameThread.start();
     }
 
     @Override
@@ -47,12 +62,9 @@ public class Panel extends JPanel implements Runnable {
         double nextDrawTime = System.nanoTime() + drawInterval;
 
         while(gameThread != null) {
-
-            long currentTime = System.nanoTime();
-
-          // UPDATE: info such as character positions
+            // UPDATE: info such as character positions
             update();
-          // DRAW: draw the screen with the updated info
+            // DRAW: draw the screen with the updated info
             repaint(); // paintComponent()
 
             try {
@@ -68,20 +80,42 @@ public class Panel extends JPanel implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
     public void update() {
         player.update();
+        for (int i = 0; i < nps.length; i++) {
+            if(nps[i] != null) {
+                nps[i].update();
+            }
+        }
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D)g; // Change graphics g to 2D
-        player.draw(g2);
-        g2.dispose(); // Dispose of this graphics context and release any system resources that it is using.
 
+        // Tile
+        tileM.draw(g2);
+
+        // Object
+        for(int i = 0; i < obj.length; i++) {
+           if(obj[i] != null) {
+               obj[i].draw(g2, this);
+           }
+        }
+        // boss
+        for (int i = 0; i < nps.length; i++) {
+            if(nps[i] != null) {
+                nps[i].draw(g2);
+            }
+        }
+        // Player
+        player.draw(g2);
+        ui.draw(g2);
+
+        g2.dispose(); // Dispose of this graphics context and release any system resources that it is using.
     }
 }

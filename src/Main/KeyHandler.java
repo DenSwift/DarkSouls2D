@@ -27,7 +27,6 @@ public class KeyHandler implements KeyListener {
             right = true;
         }
     }
-
     @Override
     public void keyReleased(KeyEvent e) {
         int keyCode = e.getKeyCode();
