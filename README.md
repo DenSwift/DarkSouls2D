@@ -1,4 +1,5 @@
-<img width="687" height="301" alt="Screenshot 2025-10-15 at 16 04 19" src="https://github.com/user-attachments/assets/46ccc32c-55df-4638-b740-0fa62b9f74f2" / >
+<img width="687" height="301" alt="Screenshot 2025-10-15 at 16 04 19" src="https://github.com/user-attachments/assets/7b9daa75-c323-44fc-84ac-75c1639bd8ce" />
+
 
 DarkSouls2D
 
